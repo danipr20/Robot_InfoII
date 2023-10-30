@@ -1,6 +1,11 @@
 Hola Git odejaime 301020232350
 Hola Oscar, soy Daniel Prieto
 Nueva modificación
+<<<<<<< HEAD
+ccc2
+=======
 c5
+>>>>>>> c97f499a5a648b1ddc8eb83121ef1ecc15117a7d
 c2
 c3
+apache
