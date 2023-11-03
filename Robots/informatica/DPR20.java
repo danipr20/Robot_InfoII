@@ -6,6 +6,7 @@ import static robocode.util.Utils.normalRelativeAngleDegrees;
 
 public class DPR20 extends Robot {
 	// Variables de estado
+	boolean esquiva;
 	boolean enemiDetected = false;
 	boolean posicionamiento = false;
 	double gunTurnAmt;
@@ -14,6 +15,7 @@ public class DPR20 extends Robot {
 	int bonusFire = 0;
 	int bonusRadar = 0;
 	int bonusMov = 0;
+	int buscar = 0;
 
 	public void run() {
 		// Configuración de colores
@@ -33,30 +35,29 @@ public class DPR20 extends Robot {
 
 		while (true) {
 
-			establecerEnemigo(); // Actualiza la estrategia según el enemigo
 			if (!enemiDetected) {
-				spotEnemy(a, bonusRadar); // Gira el radar para buscar al enemigo
-			}
-			if (enemiDetected) {
-				a = -a; // Cambia la dirección del radar cuando se detecta al enemigo
+				spotEnemy(bonusRadar); // Gira el radar para buscar al enemigo
 			}
 			enemiDetected = false;
 		}
 	}
 
 	public void onScannedRobot(ScannedRobotEvent e) {
+		establecerEnemigo();
 		enemiDetected = true;
-		if (enemyScan==null){
-		enemyName = e.getName();}
-		if (enemyName.equals("sample.Crazy") || enemyName.equals("sample.Corners")) {
+		if (enemyScan == null) {
+			enemyName = e.getName();
+		}
+		buscar = 0;
+		if (!posicionamiento && (enemyName.equals("sample.Crazy") || enemyName.equals("sample.Corners"))) {
 			fireI(e.getDistance());
 		} // Decisión de cuánta energía usar para disparar
 		else {
-			if (e.getDistance() > 100&&enemyName==e.getName();) {
+			if (e.getDistance() > 200 && !posicionamiento) {
 				gunTurnAmt = normalRelativeAngleDegrees(e.getBearing() + (getHeading() - getRadarHeading()));
-				turnGunRight(gunTurnAmt); // Apunta al enemigo
-				turnRight(e.getBearing()); // Gira para enfrentar al enemigo
-				ahead(e.getDistance() - 70); // Avanza hacia el enemigo
+				turnGunRight(gunTurnAmt);
+				turnRight(e.getBearing());
+				ahead(e.getDistance() - 50);
 				return;
 			}
 
@@ -64,23 +65,20 @@ public class DPR20 extends Robot {
 			turnGunRight(gunTurnAmt);
 			fireI(e.getDistance()); // Dispara al enemigo
 
-			if (e.getDistance() < 20) {
-				// Retrocede si el enemigo está muy cerca
-				if (e.getBearing() > -90 && e.getBearing() <= 90) {
-					back(20);
-				} else {
-					ahead(10);
-				}
-			}
 		}
 	}
 
 	public void onHitByBullet(HitByBulletEvent e) {
 		// En caso de ser impactado por una bala
-		if (!posicionamiento && (enemyName.equals("sample.Corners") || enemyName.equals("sample.Crazy"))) {
+
+		if (!posicionamiento && !esquiva && (enemyName.equals("sample.Corners") || enemyName.equals("sample.Crazy"))) {
+			esquiva = true;
 			turnLeft(90); // Gira 90 grados
 			ahead(bonusMov); // Avanza según la estrategia
+			turnGunRight(90);
+			esquiva = false;
 		}
+
 	}
 
 	public void onHitWall(HitWallEvent e) {
@@ -104,20 +102,30 @@ public class DPR20 extends Robot {
 		posicionamiento = false;
 	}
 
-	public void spotEnemy(int a, int bonusRadar) {
-		int i = 10 + bonusRadar;
-		i = i * a;
-		turnGunRight(i); // Gira el radar en sentido de "a"
+	public void spotEnemy(int bonusRadar) {
+
+		turnGunRight(gunTurnAmt);
+		buscar++;
+		if (buscar > 2) {
+			gunTurnAmt = bonusRadar;
+		}
+		if (buscar > 5) {
+			gunTurnAmt = -bonusRadar;
+		}
+		if (buscar > 11) {
+			enemyName = "0";
+		}
+
 	}
 
 	public void establecerEnemigo() {
 		if (enemyName.equals("sample.Corners")) {
-			bonusFire = 2;
-			bonusRadar = 15;
+			bonusFire = 3;
+			bonusRadar = 5;
 			bonusMov = 75;
 		} else if (enemyName.equals("sample.Crazy")) {
-			bonusFire = 0;
-			bonusRadar = 25;
+			bonusFire = 1;
+			bonusRadar = 15;
 			bonusMov = 40;
 		} else if (enemyName.equals("sample.PaintingRobot")) {
 			bonusFire = 2;
@@ -125,12 +133,12 @@ public class DPR20 extends Robot {
 			bonusMov = 25;
 		} else if (!enemyName.equals("sample.Crazy") && !enemyName.equals("sample.Crazy")
 				&& !enemyName.equals("sample.PaintingRobot") && !enemyName.equals("0")) {
-			bonusFire = 3;
-			bonusRadar = 10;
+			bonusFire = 1;
+			bonusRadar = 6;
 			bonusMov = 10;
 		} else if (enemyName.equals("0")) {
-			bonusFire = 0;
-			bonusRadar = 35;
+			bonusFire = 1;
+			bonusRadar = 10;
 			bonusMov = 25;
 		}
 	}
