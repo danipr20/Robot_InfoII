@@ -8,9 +8,9 @@ public class DPR20 extends Robot {
 	// Variables de estado
 	boolean enemiDetected = false;
 	boolean posicionamiento = false;
-	boolean attack = false;
-	double myEnergy, myHeading, myGunHeading, myX, myY, enemyVelocity, gunTurnAmt;
+	double gunTurnAmt;
 	String enemyName = "0";
+	String enemyScan;
 	int bonusFire = 0;
 	int bonusRadar = 0;
 	int bonusMov = 0;
@@ -29,10 +29,10 @@ public class DPR20 extends Robot {
 
 		if (posicionamiento) {
 			enemiDetected = false;
-			attack = false;
 		}
 
 		while (true) {
+
 			establecerEnemigo(); // Actualiza la estrategia según el enemigo
 			if (!enemiDetected) {
 				spotEnemy(a, bonusRadar); // Gira el radar para buscar al enemigo
@@ -46,17 +46,17 @@ public class DPR20 extends Robot {
 
 	public void onScannedRobot(ScannedRobotEvent e) {
 		enemiDetected = true;
-		enemyName = e.getName();
-		enemyVelocity = e.getVelocity();
+		if (enemyScan==null){
+		enemyName = e.getName();}
 		if (enemyName.equals("sample.Crazy") || enemyName.equals("sample.Corners")) {
 			fireI(e.getDistance());
 		} // Decisión de cuánta energía usar para disparar
 		else {
-			if (e.getDistance() > 150) {
+			if (e.getDistance() > 100&&enemyName==e.getName();) {
 				gunTurnAmt = normalRelativeAngleDegrees(e.getBearing() + (getHeading() - getRadarHeading()));
 				turnGunRight(gunTurnAmt); // Apunta al enemigo
 				turnRight(e.getBearing()); // Gira para enfrentar al enemigo
-				ahead(e.getDistance() - 140); // Avanza hacia el enemigo
+				ahead(e.getDistance() - 70); // Avanza hacia el enemigo
 				return;
 			}
 
@@ -64,12 +64,12 @@ public class DPR20 extends Robot {
 			turnGunRight(gunTurnAmt);
 			fireI(e.getDistance()); // Dispara al enemigo
 
-			if (e.getDistance() < 100) {
+			if (e.getDistance() < 20) {
 				// Retrocede si el enemigo está muy cerca
 				if (e.getBearing() > -90 && e.getBearing() <= 90) {
-					back(40);
+					back(20);
 				} else {
-					ahead(40);
+					ahead(10);
 				}
 			}
 		}
@@ -110,14 +110,6 @@ public class DPR20 extends Robot {
 		turnGunRight(i); // Gira el radar en sentido de "a"
 	}
 
-	public void myRobotInfo() {
-		myEnergy = getEnergy();
-		myHeading = getHeading();
-		myGunHeading = getGunHeading();
-		myX = getX();
-		myY = getY();
-	}
-
 	public void establecerEnemigo() {
 		if (enemyName.equals("sample.Corners")) {
 			bonusFire = 2;
@@ -128,13 +120,13 @@ public class DPR20 extends Robot {
 			bonusRadar = 25;
 			bonusMov = 40;
 		} else if (enemyName.equals("sample.PaintingRobot")) {
-			bonusFire = 0;
+			bonusFire = 2;
 			bonusRadar = 10;
 			bonusMov = 25;
 		} else if (!enemyName.equals("sample.Crazy") && !enemyName.equals("sample.Crazy")
 				&& !enemyName.equals("sample.PaintingRobot") && !enemyName.equals("0")) {
-			bonusFire = 1;
-			bonusRadar = 15;
+			bonusFire = 3;
+			bonusRadar = 10;
 			bonusMov = 10;
 		} else if (enemyName.equals("0")) {
 			bonusFire = 0;
@@ -151,5 +143,10 @@ public class DPR20 extends Robot {
 		} else {
 			fire(3 + bonusFire); // Dispara con potencia 3 + bonus
 		}
+	}
+
+	public void onDeath(DeathEvent event) {
+		System.out.println("Mierda...");
+		System.out.println("Volveré a por ti " + enemyName);
 	}
 }
