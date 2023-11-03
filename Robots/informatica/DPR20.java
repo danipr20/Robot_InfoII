@@ -35,9 +35,8 @@ public class DPR20 extends Robot {
 
 		while (true) {
 
-			if (!enemiDetected) {
-				spotEnemy(bonusRadar); // Gira el radar para buscar al enemigo
-			}
+			spotEnemy(bonusRadar); // Gira el radar para buscar al enemigo
+
 			enemiDetected = false;
 		}
 	}
