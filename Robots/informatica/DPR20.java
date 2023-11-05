@@ -9,11 +9,12 @@ public class DPR20 extends Robot {
 	boolean esquiva;
 	boolean posicionamiento = false;
 	double gunTurnAmt;
-	String enemyName = "0";
-	String enemyScan;// hay que eliminar esta variable ya que es redundante
+	String enemyName = "0"; // Nuestro enemigo de base será 0
+	// inicializacion de bonus
 	int bonusFire = 0;
 	int bonusRadar = 0;
 	int bonusMov = 0;
+
 	int buscar = 0;
 
 	public void run() {
@@ -24,19 +25,16 @@ public class DPR20 extends Robot {
 		setBulletColor(Color.red);
 
 		establecerEnemigo(); // Ajusta la estrategia segun el enemigo
-		int a = 1;
-
 		takeCenter(); // Posiciona el robot en el centro del campo de batalla
 
 		while (true) {
-
 			spotEnemy(bonusRadar); // Gira el radar para buscar al enemigo
 		}
 	}
 
 	public void onScannedRobot(ScannedRobotEvent e) {
 		establecerEnemigo();
-		if (enemyName == "0") {// hay que sustituir enemyScan por enemyName
+		if (enemyName == "0") { // hay que sustituir enemyScan por enemyName
 			enemyName = e.getName();
 		}
 		buscar = 0;
@@ -56,7 +54,6 @@ public class DPR20 extends Robot {
 			gunTurnAmt = normalRelativeAngleDegrees(e.getBearing() + (getHeading() - getRadarHeading()));
 			turnGunRight(gunTurnAmt);
 			fireI(e.getDistance()); // Dispara al enemigo
-
 		}
 	}
 
@@ -66,11 +63,11 @@ public class DPR20 extends Robot {
 		if (!posicionamiento && !esquiva && (enemyName.equals("sample.Corners") || enemyName.equals("sample.Crazy"))) {
 			esquiva = true;
 			turnLeft(90); // Gira 90 grados
+			turnGunRight(100);
 			ahead(bonusMov); // Avanza según la estrategia
-			turnGunRight(90);
+
 			esquiva = false;
 		}
-
 	}
 
 	public void onHitWall(HitWallEvent e) {
@@ -95,7 +92,6 @@ public class DPR20 extends Robot {
 	}
 
 	public void spotEnemy(int bonusRadar) {
-
 		turnGunRight(gunTurnAmt);
 		buscar++;
 		if (buscar > 2) {
@@ -107,7 +103,6 @@ public class DPR20 extends Robot {
 		if (buscar > 11) {
 			enemyName = "0";
 		}
-
 	}
 
 	public void establecerEnemigo() {
