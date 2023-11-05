@@ -25,6 +25,7 @@ public class DPR20 extends Robot {
 		setBulletColor(Color.red);
 
 		establecerEnemigo(); // Ajusta la estrategia segun el enemigo
+
 		takeCenter(); // Posiciona el robot en el centro del campo de batalla
 
 		while (true) {
@@ -38,7 +39,7 @@ public class DPR20 extends Robot {
 			enemyName = e.getName();
 		}
 		buscar = 0;
-		if (!posicionamiento && (enemyName.equals("sample.Crazy") || enemyName.equals("sample.Corners"))) {
+		if (!posicionamiento && enemyName.equals("sample.Crazy")) {
 			fireI(e.getDistance());
 		} // Decisión de cuánta energía usar para disparar
 		else {
@@ -60,7 +61,7 @@ public class DPR20 extends Robot {
 	public void onHitByBullet(HitByBulletEvent e) {
 		// En caso de ser impactado por una bala
 
-		if (!posicionamiento && !esquiva && (enemyName.equals("sample.Corners") || enemyName.equals("sample.Crazy"))) {
+		if (!posicionamiento && !esquiva && enemyName.equals("sample.Crazy")) {
 			esquiva = true;
 			turnLeft(90); // Gira 90 grados
 			turnGunRight(100);
@@ -106,10 +107,10 @@ public class DPR20 extends Robot {
 	}
 
 	public void establecerEnemigo() {
-		if (enemyName.equals("sample.Corners")) {
-			bonusFire = 3;
+		if (enemyName.equals("sample.SpinBot")) {
+			bonusFire = 2;
 			bonusRadar = 5;
-			bonusMov = 75;
+			bonusMov = 0;
 		} else if (enemyName.equals("sample.Crazy")) {
 			bonusFire = 1;
 			bonusRadar = 15;
