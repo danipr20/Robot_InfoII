@@ -35,7 +35,7 @@ public class DPR20 extends Robot {
 
 	public void onScannedRobot(ScannedRobotEvent e) {
 		establecerEnemigo();
-		if (enemyName == "0") { // hay que sustituir enemyScan por enemyName
+		if (enemyName == "0") { 
 			enemyName = e.getName();
 		}
 		buscar = 0;
