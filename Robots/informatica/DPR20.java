@@ -44,11 +44,12 @@ public class DPR20 extends Robot {
 			fireI(e.getDistance());
 		} // Decisión de cuánta energía usar para disparar
 		else {
-			if (e.getDistance() > 200 && !posicionamiento) {
-				gunTurnAmt = normalRelativeAngleDegrees(e.getBearing() + (getHeading() - getRadarHeading()));
-				turnGunRight(gunTurnAmt);
+			if (e.getDistance() > 170 && !posicionamiento) {
+				posicionamiento = true;
 				turnRight(e.getBearing());
+				turnGunRight(-e.getBearing());
 				ahead(e.getDistance() - 50);
+				posicionamiento = false;
 				return;
 			}
 
